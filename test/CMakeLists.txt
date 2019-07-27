@@ -6,6 +6,10 @@ set_target_properties(tests PROPERTIES
   CXX_STANDARD 17
 )
 
+target_include_directories(tests PRIVATE
+  ${PROJECT_SOURCE_DIR}/include
+)
+
 target_link_libraries(tests gtest_main gmock gcov oozrt)
 
 add_test(

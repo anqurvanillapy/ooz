@@ -3,6 +3,6 @@
 int
 main()
 {
-    Func();
+    func();
     return 0;
 }

@@ -5,3 +5,7 @@ add_library(oozclib STATIC
   ${SRC_FILES}
   ${HEADER_FILES}
 )
+
+target_include_directories(oozclib PRIVATE
+  ${PROJECT_SOURCE_DIR}/include
+)

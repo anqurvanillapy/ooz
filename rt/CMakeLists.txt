@@ -7,5 +7,5 @@ add_library(oozrt STATIC
 )
 
 target_include_directories(oozrt PRIVATE
-  ${PROJECT_SOURCE_DIR}/compiler
+  ${PROJECT_SOURCE_DIR}/include
 )
