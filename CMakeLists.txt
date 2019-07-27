@@ -20,12 +20,13 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
     -fprofile-arcs
     -ftest-coverage
   )
+  link_libraries(gcov)
 elseif(CMAKE_BUILD_TYPE STREQUAL Release)
   add_definitions(
     -O3
   )
 else()
-  message("Unrecognised build type")
+  message(FATAL_ERROR "Unrecognised build type")
 endif()
 
 include(CTest)

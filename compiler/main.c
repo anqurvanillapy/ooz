@@ -1,8 +1,23 @@
-#include "lib/lib.h"
+#include "lib/codegen.h"
+#include "ooz/log.h"
 
 int
-main()
+main(int argc, const char *argv[])
 {
-    func();
+    (void)argc;
+    (void)argv;
+
+    err_t err;
+
+    err = cg_init("hello.ooz");
+    if (err != OK) {
+        LOG_FATAL(err);
+    }
+
+    err = cg_writefile();
+    if (err != OK) {
+        LOG_FATAL(err);
+    }
+
     return 0;
 }

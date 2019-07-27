@@ -10,7 +10,7 @@ target_include_directories(tests PRIVATE
   ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(tests gtest_main gmock gcov oozrt)
+target_link_libraries(tests gtest_main gmock oozrt)
 
 add_test(
   NAME all
