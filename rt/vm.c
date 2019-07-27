@@ -15,10 +15,10 @@ vm_pop(uintptr_t *s)
     *s -= sizeof(void *);
 }
 
-uintptr_t R1;
-uintptr_t R2;
-uintptr_t R3;
-uintptr_t R4;
+uintptr_t r1;
+uintptr_t r2;
+uintptr_t r3;
+uintptr_t r4;
 
 uintptr_t stk;
 
