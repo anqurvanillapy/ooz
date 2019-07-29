@@ -10,4 +10,5 @@ typedef enum err {
     ErrNullPointer,
     ErrFilePath,
     ErrOpenFile,
+    ErrNoMem,
 } err_t;
