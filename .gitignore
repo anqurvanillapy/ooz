@@ -1,8 +1,8 @@
 .vscode
 build/
 
-*.yy.c
-*.ll.c
+*.yy.*
+*.ll.*
 *.tab.*
 *.output
 

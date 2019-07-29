@@ -9,3 +9,5 @@ add_library(oozclib STATIC
 target_include_directories(oozclib PRIVATE
   ${PROJECT_SOURCE_DIR}/include
 )
+
+target_compile_options(oozclib PRIVATE ${STRICT_FLAGS})

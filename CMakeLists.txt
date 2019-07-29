@@ -29,28 +29,28 @@ else()
   message(FATAL_ERROR "Unrecognised build type")
 endif()
 
+set(STRICT_FLAGS
+  "-Werror"
+  "-Wall"
+  "-Wextra"
+  "-Wpedantic"
+  "-Wshadow"
+  "-Wcast-align"
+  "-Wunused"
+  "-Wconversion"
+  "-Wsign-conversion"
+  "-Wduplicated-cond"
+  "-Wduplicated-branches"
+  "-Wlogical-op"
+  "-Wnull-dereference"
+  "-Wdouble-promotion"
+  "-Wformat=2"
+)
+
 include(CTest)
 enable_testing()
 add_subdirectory(3rdparty/googletest)
 add_subdirectory(test)
-
-add_definitions(
-  -Werror
-  -Wall
-  -Wextra
-  -Wpedantic
-  -Wshadow
-  -Wcast-align
-  -Wunused
-  -Wconversion
-  -Wsign-conversion
-  -Wduplicated-cond
-  -Wduplicated-branches
-  -Wlogical-op
-  -Wnull-dereference
-  -Wdouble-promotion
-  -Wformat=2
-)
 
 add_subdirectory(compiler)
 add_subdirectory(rt)

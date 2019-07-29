@@ -1,9 +1,17 @@
 add_subdirectory(lib)
 
-add_executable(oozc main.c)
+find_package(FLEX)
+find_package(BISON)
+
+flex_target(lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.ll.c)
+bison_target(parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.yy.c)
+add_flex_bison_dependency(lexer parser)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(oozc
+  ${FLEX_lexer_OUTPUTS}
+  ${BISON_parser_OUTPUTS}
+)
 
 target_link_libraries(oozc oozclib)
-
-target_include_directories(oozc PRIVATE
-  ${PROJECT_SOURCE_DIR}/include
-)
