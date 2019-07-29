@@ -1,5 +1,5 @@
 #include "codegen.h"
-#include "ooz/log.h"
+#include "ooz/ooz.h"
 #include <stdio.h>
 
 #define PATH_MAX 4096

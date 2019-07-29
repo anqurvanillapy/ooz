@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "lib/abstract.h"
+
 extern FILE *yyin;
 
 void yyerror(const char *s);
@@ -28,7 +30,7 @@ int yylex();
 %%
 
 top :
-    | stmts
+    | stmts { abs_set_module(NULL, 0); }
     | module
     | module stmts
     ;
@@ -37,7 +39,8 @@ stmts : stmts stmt
       | stmt
       ;
 
-module : T_MODULE T_IDENT T_WHERE { printf("%s\n", $2); }
+module : T_MODULE T_IDENT T_WHERE
+         { abs_set_module($2, @1.last_column - @1.first_column); }
        ;
 
 stmt : decl

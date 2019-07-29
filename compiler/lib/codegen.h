@@ -1,6 +1,11 @@
+/**
+ * @file codegen.h
+ * Code generator
+ */
+
 #pragma once
 
-#include "ooz/error.h"
+#include "ooz/ooz.h"
 #include <stdio.h>
 
 #ifdef __cpluscplus
