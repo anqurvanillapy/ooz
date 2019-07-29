@@ -18,6 +18,7 @@ int yylex();
 }
 
 %token<strval> T_IDENT
+%token T_MODULE T_WHERE
 %token T_TYPEOF T_ARROW T_ASSIGN T_LPAREN T_RPAREN T_LAMBDA T_SEMICOLON
 
 %left T_ARROW
@@ -26,9 +27,18 @@ int yylex();
 
 %%
 
-top : top stmt
-    | stmt
+top :
+    | stmts
+    | module
+    | module stmts
     ;
+
+stmts : stmts stmt
+      | stmt
+      ;
+
+module : T_MODULE T_IDENT T_WHERE { printf("%s\n", $2); }
+       ;
 
 stmt : decl
      | def
@@ -61,7 +71,7 @@ const char *filename;
 int
 main(int argc, const char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "Usage: corona FILE\n");
+        fprintf(stderr, "Usage: oozc FILE\n");
         exit(1);
     }
 

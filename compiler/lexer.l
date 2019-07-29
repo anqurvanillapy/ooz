@@ -32,7 +32,7 @@ int paren_depth;
 <C_COMMENT>.    {}
 
 "\n" {
-    // Optional semicolon.
+    /* Optional semicolon */
     if (paren_depth == 0 && (last_token == T_IDENT || last_token == T_RPAREN)) {
         last_token = T_SEMICOLON;
         return last_token;
@@ -46,6 +46,8 @@ int paren_depth;
 ")"         { --paren_depth; last_token = T_RPAREN; return last_token; }
 "\\"        { last_token = T_LAMBDA; return last_token; }
 ";"         { last_token = T_SEMICOLON; return last_token; }
+"module"    { last_token = T_MODULE; return last_token; }
+"where"     { last_token = T_WHERE; return last_token; }
 
 [A-Za-z][A-Za-z0-9']*   {
     last_token = T_IDENT;
