@@ -1,4 +1,4 @@
 (* Comments *)
 
-const :: (Int -> Int) -> Int -> Int -> Int;
-const = \x -> \y -> x;
+const :: (Int -> Int) -> Int -> Int -> Int
+const = \x -> \y -> x
