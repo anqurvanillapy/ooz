@@ -1,5 +1,5 @@
 (* Basic *)
 module Basic where
 
-const :: (Int -> Int) -> Int -> Int -> Int
-const = \x -> \y -> x
+true :: a -> a -> a
+true = \x -> \y -> x

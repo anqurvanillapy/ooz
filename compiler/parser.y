@@ -47,7 +47,7 @@ stmt : decl
      | def
      ;
 
-decl : T_IDENT T_TYPEOF typexpr T_SEMICOLON { printf("%s\n", $1); }
+decl : T_IDENT T_TYPEOF typexpr T_SEMICOLON
      ;
 
 typexpr : T_IDENT

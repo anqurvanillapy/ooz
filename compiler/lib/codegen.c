@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define PATH_MAX 4096
-#define OUT_FILENAME_SIZ sizeof(char) * (PATH_MAX + 1)
+#define OUT_FILENAME_SIZ (sizeof(char) * (PATH_MAX + 1))
 
 typedef struct {
     char *outfile;
