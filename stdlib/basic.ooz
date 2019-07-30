@@ -1,5 +1,14 @@
 (* Basic *)
 module Basic where
 
+id :: a -> a
+id = \x -> x
+
 true :: a -> a -> a
-true = \x -> \y -> x
+true  = \x -> \y -> x
+
+false :: a -> a -> a
+false = \x -> \y -> y
+
+not :: a -> a
+not = \x -> x false true

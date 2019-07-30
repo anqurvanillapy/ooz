@@ -40,7 +40,7 @@ stmts : stmts stmt
       ;
 
 module : T_MODULE T_IDENT T_WHERE
-         { abs_set_module($2, @1.last_column - @1.first_column); }
+         { abs_set_module($2, @2.last_column - @2.first_column); }
        ;
 
 stmt : decl
@@ -55,11 +55,13 @@ typexpr : T_IDENT
         | typexpr T_ARROW typexpr
         ;
 
-def : T_IDENT T_ASSIGN expr T_SEMICOLON { printf("%s\n", $1); }
+def : T_IDENT T_ASSIGN expr T_SEMICOLON
+      { printf("%.*s\n", @1.last_column - @1.first_column, $1); }
     ;
 
 expr : lambda_func
      | T_IDENT
+     | T_IDENT expr
      | T_LPAREN expr T_RPAREN
      | T_LPAREN expr T_RPAREN expr
      ;

@@ -19,6 +19,10 @@ uintptr_t r1;
 uintptr_t r2;
 uintptr_t r3;
 uintptr_t r4;
+uintptr_t r5;
+uintptr_t r6;
+uintptr_t r7;
+uintptr_t r8;
 
 uintptr_t stk;
 

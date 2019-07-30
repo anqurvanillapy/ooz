@@ -14,15 +14,12 @@ abs_set_module(const char *name, size_t len)
         ast.module_name_len = 0;
     }
 
-    size_t bufsiz = len;
-    size_t name_len = bufsiz - 1;
-
-    ast.module_name = (char *)malloc(sizeof(char) * bufsiz);
+    ast.module_name = (char *)malloc(sizeof(char) * (len + 1));
     if (!ast.module_name) {
         LOG_FATAL(ErrNoMem);
     }
 
-    strncpy(ast.module_name, name, bufsiz);
-    ast.module_name[name_len] = '\0';
-    ast.module_name_len = name_len;
+    strncpy(ast.module_name, name, len + 1);
+    ast.module_name[len] = '\0';
+    ast.module_name_len = len;
 }
