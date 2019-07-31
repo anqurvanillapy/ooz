@@ -5,30 +5,31 @@
 
 #pragma once
 
+#include "concrete.h"
 #include "map.h"
 #include "vec.h"
 #include <stddef.h>
 
 typedef enum expr_tag {
-    ExprLit,
     ExprLam,
+    ExprVar,
 } expr_tag_t;
 
-typedef struct {
-    int arity;
-} lambda_t;
-
-typedef struct {
+typedef struct expr {
     expr_tag_t tag;
     union {
-        void *lit;
-        lambda_t lam;
+        struct {
+            fileloc_t loc;
+            char *arg;
+            struct expr *e;
+        } lam;
+        struct {
+            fileloc_t loc;
+            int index;
+            char *name;
+        } var;
     } val;
 } expr_t;
-
-typedef struct {
-    vec_t *exprs;
-} def_t;
 
 typedef struct {
     vec_t *defs;
@@ -40,7 +41,7 @@ typedef struct {
     size_t module_name_len;
 
     map_t *stmts;
-} ast_t;
+} abs_t;
 
 /**
  * Set module name

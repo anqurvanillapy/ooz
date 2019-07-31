@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static ast_t ast;
+static abs_t ast;
 
 void
 abs_set_module(const char *name, size_t len)
