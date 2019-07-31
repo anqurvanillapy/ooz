@@ -29,8 +29,8 @@ int yylex();
 
 %%
 
-top :
-    | stmts { abs_set_module(NULL, 0); }
+top :       { abs_init(NULL, 0); }
+    | stmts { abs_init(NULL, 0); }
     | module
     | module stmts
     ;
@@ -40,7 +40,7 @@ stmts : stmts stmt
       ;
 
 module : T_MODULE T_IDENT T_WHERE
-         { abs_set_module($2, @2.last_column - @2.first_column); }
+         { abs_init($2, @2.last_column - @2.first_column); }
        ;
 
 stmt : decl

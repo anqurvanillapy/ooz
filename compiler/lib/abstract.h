@@ -8,7 +8,20 @@
 #include "concrete.h"
 #include "map.h"
 #include "vec.h"
+#include <stdbool.h>
 #include <stddef.h>
+
+typedef struct {
+    fileloc_t loc;
+    char *arg;
+    struct expr *e;
+} lam_t;
+
+typedef struct {
+    fileloc_t loc;
+    int index;
+    char *name;
+} var_t;
 
 typedef enum expr_tag {
     ExprLam,
@@ -18,16 +31,8 @@ typedef enum expr_tag {
 typedef struct expr {
     expr_tag_t tag;
     union {
-        struct {
-            fileloc_t loc;
-            char *arg;
-            struct expr *e;
-        } lam;
-        struct {
-            fileloc_t loc;
-            int index;
-            char *name;
-        } var;
+        lam_t lam;
+        var_t var;
     } val;
 } expr_t;
 
@@ -43,10 +48,9 @@ typedef struct {
     map_t *stmts;
 } abs_t;
 
-/**
- * Set module name
- */
-void abs_set_module(const char *name, size_t len);
+void abs_init(const char *name, size_t len);
+
+bool abs_env_lookup(const char *name);
 
 #ifdef __cpluscplus
 extern "C" {

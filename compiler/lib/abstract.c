@@ -6,8 +6,8 @@
 
 static abs_t ast;
 
-void
-abs_set_module(const char *name, size_t len)
+static void
+_abs_init_module(const char *name, size_t len)
 {
     if (!name) {
         ast.module_name = NULL;
@@ -22,4 +22,24 @@ abs_set_module(const char *name, size_t len)
     strncpy(ast.module_name, name, len + 1);
     ast.module_name[len] = '\0';
     ast.module_name_len = len;
+}
+
+static void
+_abs_init_stmts()
+{
+    ast.stmts = map_new(32);
+}
+
+void
+abs_init(const char *name, size_t len)
+{
+    _abs_init_module(name, len);
+    _abs_init_stmts();
+}
+
+bool
+abs_env_lookup(const char *name)
+{
+    (void)name;
+    return false;
 }
