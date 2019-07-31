@@ -26,6 +26,7 @@ typedef enum err {
     ErrFilePath,
     ErrOpenFile,
     ErrNoMem,
+    ErrInternal,
 } err_t;
 
 typedef enum closure_type {

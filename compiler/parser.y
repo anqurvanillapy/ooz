@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "lib/abstract.h"
+#include "lib/codegen.h"
 
 extern FILE *yyin;
 
@@ -17,6 +18,7 @@ int yylex();
 
 %union{
     char *strval;
+    expr_t *expr;
 }
 
 %token<strval> T_IDENT
@@ -25,53 +27,87 @@ int yylex();
 
 %left T_ARROW
 
+%type<expr> expr
+
 %start top
 
 %%
 
-top :       { abs_init(NULL, 0); }
-    | stmts { abs_init(NULL, 0); }
+top
+    :
+    | stmts
     | module
     | module stmts
     ;
 
-stmts : stmts stmt
-      | stmt
-      ;
-
-module : T_MODULE T_IDENT T_WHERE
-         { abs_init($2, @2.last_column - @2.first_column); }
-       ;
-
-stmt : decl
-     | def
-     ;
-
-decl : T_IDENT T_TYPEOF typexpr T_SEMICOLON
-     ;
-
-typexpr : T_IDENT
-        | T_LPAREN typexpr T_RPAREN
-        | typexpr T_ARROW typexpr
-        ;
-
-def : T_IDENT T_ASSIGN expr T_SEMICOLON
-      { printf("%.*s\n", @1.last_column - @1.first_column, $1); }
+stmts
+    : stmts stmt
+    | stmt
     ;
 
-expr : lambda_func
-     | T_IDENT
-     | T_IDENT expr
-     | T_LPAREN expr T_RPAREN
-     | T_LPAREN expr T_RPAREN expr
-     ;
+module
+    : T_MODULE T_IDENT T_WHERE
+    {
+        char *name = lex_substr($2, @2.last_column - @2.first_column);
+        abs_set_module(name);
+    }
+    ;
 
-lambda_func : T_LAMBDA T_IDENT T_ARROW expr
-            ;
+stmt
+    : decl
+    | def
+    ;
+
+decl
+    : T_IDENT T_TYPEOF typexpr T_SEMICOLON
+    ;
+
+typexpr
+    : T_IDENT
+    | T_LPAREN typexpr T_RPAREN
+    | typexpr T_ARROW typexpr
+    ;
+
+def
+    : T_IDENT T_ASSIGN expr T_SEMICOLON
+    {
+        expr_t *lam = abs_lam_new(@1.first_line, @1.last_column);
+        char *name = lex_substr($1, @1.last_column - @1.first_column);
+        abs_ctx_add(name, lam);
+    }
+    ;
+
+expr
+    : lambda_func
+    { $$ = NULL; }
+    | T_IDENT
+    {
+        char *name = lex_substr($1, @1.last_column - @1.first_column);
+        expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
+        printf("rightmost variable: %s\n", var->val.var.name);
+        $$ = var;
+    }
+    | T_IDENT expr
+    {
+        char *name = lex_substr($1, @1.last_column - @1.first_column);
+        expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
+        printf("applied variable: %s\n", var->val.var.name);
+        $$ = var;
+    }
+    | T_LPAREN expr T_RPAREN
+    { $$ = NULL; }
+    | T_LPAREN expr T_RPAREN expr
+    { $$ = NULL; }
+    ;
+
+lambda_func
+    : T_LAMBDA T_IDENT T_ARROW expr
+    { printf("lambda definition: %s\n", $2); }
+    ;
 
 %%
 
-const char *filename;
+static const char *filename;
 
 int
 main(int argc, const char *argv[]) {
@@ -87,15 +123,20 @@ main(int argc, const char *argv[]) {
         exit(1);
     }
 
+    abs_init(filename);
+
     yyparse();
     fclose(yyin);
+
+    cg_init(filename);
+    cg_writefile();
 
     return 0;
 }
 
 void
 yyerror(const char *s) {
-    fprintf(stderr, "Parse error: %s:%d:%d: %s\n",
+    fprintf(stderr, "%s:%d:%d: Parse error: %s\n",
             filename, yylloc.first_line, yylloc.last_column, s);
     exit(1);
 }

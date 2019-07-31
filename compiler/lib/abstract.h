@@ -12,15 +12,13 @@
 #include <stddef.h>
 
 typedef struct {
-    fileloc_t loc;
     char *arg;
-    struct expr *e;
+    struct expr *exp;
 } lam_t;
 
 typedef struct {
-    fileloc_t loc;
     int index;
-    char *name;
+    const char *name;
 } var_t;
 
 typedef enum expr_tag {
@@ -29,11 +27,16 @@ typedef enum expr_tag {
 } expr_tag_t;
 
 typedef struct expr {
+    vec_t *env;
+    fileloc_t loc;
+
     expr_tag_t tag;
     union {
         lam_t lam;
         var_t var;
     } val;
+
+    struct expr *next_expr;
 } expr_t;
 
 typedef struct {
@@ -42,19 +45,26 @@ typedef struct {
 } stmt_t;
 
 typedef struct {
-    char *module_name;
-    size_t module_name_len;
-
-    map_t *stmts;
+    const char *filename;
+    const char *module_name;
+    map_t *ctx;
 } abs_t;
-
-void abs_init(const char *name, size_t len);
-
-bool abs_env_lookup(const char *name);
 
 #ifdef __cpluscplus
 extern "C" {
 #endif /* __cpluscplus */
+
+void abs_init(const char *filename);
+
+void abs_set_module(const char *name);
+
+bool abs_ctx_lookup(const char *name);
+
+void abs_ctx_add(const char *name, expr_t *expr);
+
+expr_t *abs_lam_new(int col, int line);
+
+expr_t *abs_var_new(int col, int line, const char *name);
 
 #ifdef __cpluscplus
 }

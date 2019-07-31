@@ -7,9 +7,10 @@
 
 #include <stdio.h>
 
-#define YY_DECL int yylex()
-
+#include "lib/abstract.h"
 #include "parser.yy.h"
+
+#define YY_DECL int yylex()
 
 static void update_yylloc(YYLTYPE *loc, const char *txt);
 

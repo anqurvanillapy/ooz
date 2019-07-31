@@ -15,7 +15,7 @@ extern "C" {
 /**
  * Initialize code generator
  */
-err_t cg_init(const char *outfile);
+err_t cg_init(const char *filename);
 
 err_t cg_writefile();
 

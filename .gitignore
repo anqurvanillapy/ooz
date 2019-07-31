@@ -1,6 +1,8 @@
 .vscode
 build/
 
+*.ooz.c
+
 *.yy.*
 *.ll.*
 *.tab.*
