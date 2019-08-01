@@ -12,7 +12,7 @@
 #include <stddef.h>
 
 typedef struct {
-    char *arg;
+    const char *arg;
     struct expr *exp;
 } lam_t;
 
@@ -27,7 +27,6 @@ typedef enum expr_tag {
 } expr_tag_t;
 
 typedef struct expr {
-    vec_t *env;
     fileloc_t loc;
 
     expr_tag_t tag;
@@ -36,7 +35,7 @@ typedef struct expr {
         var_t var;
     } val;
 
-    struct expr *next_expr;
+    struct expr *next;
 } expr_t;
 
 typedef struct {

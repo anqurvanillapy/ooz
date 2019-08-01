@@ -12,3 +12,9 @@ false = \x -> \y -> y
 
 not :: a -> a
 not = \x -> x false true
+
+K :: a -> a -> a
+K = \x -> \y -> x
+
+S :: a -> a -> a
+S = \x -> \y -> \z -> x z (y z)

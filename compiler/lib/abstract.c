@@ -60,8 +60,7 @@ _abs_expr_new(int line, int col)
     }
     expr->loc.line = line;
     expr->loc.col = col;
-    expr->env = NULL;
-    expr->next_expr = NULL;
+    expr->next = NULL;
     return expr;
 }
 
@@ -69,7 +68,6 @@ expr_t *
 abs_lam_new(int line, int col)
 {
     expr_t *expr = _abs_expr_new(line, col);
-    expr->env = vec_new();
     expr->tag = ExprLam;
     return expr;
 }

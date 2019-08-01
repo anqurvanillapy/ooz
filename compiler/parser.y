@@ -91,11 +91,13 @@ expr
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
         expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
-        printf("applied variable: %s\n", var->val.var.name);
+        printf("applied variable: %s, ", var->val.var.name);
+        var->next = $2;
+        printf("args: %s\n", var->next->val.var.name);
         $$ = var;
     }
     | T_LPAREN expr T_RPAREN
-    { $$ = NULL; }
+    { $$ = $2; }
     | T_LPAREN expr T_RPAREN expr
     { $$ = NULL; }
     ;
