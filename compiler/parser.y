@@ -27,7 +27,7 @@ int yylex();
 
 %left T_ARROW
 
-%type<expr> expr
+%type<expr> expr lambda_func
 
 %start top
 
@@ -71,40 +71,48 @@ typexpr
 def
     : T_IDENT T_ASSIGN expr T_SEMICOLON
     {
-        expr_t *lam = abs_lam_new(@1.first_line, @1.last_column);
         char *name = lex_substr($1, @1.last_column - @1.first_column);
-        abs_ctx_add(name, lam);
+        abs_def_check_boundfree(name, $3);
+        abs_ctx_add(name, $3);
     }
     ;
 
 expr
     : lambda_func
-    { $$ = NULL; }
+    {
+        $$ = $1;
+    }
     | T_IDENT
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
         expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
-        printf("rightmost variable: %s\n", var->val.var.name);
         $$ = var;
     }
     | T_IDENT expr
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
         expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
-        printf("applied variable: %s, ", var->val.var.name);
         var->next = $2;
-        printf("args: %s\n", var->next->val.var.name);
         $$ = var;
     }
     | T_LPAREN expr T_RPAREN
-    { $$ = $2; }
+    {
+        $$ = $2;
+    }
     | T_LPAREN expr T_RPAREN expr
-    { $$ = NULL; }
+    {
+        expr_t* expr = $2;
+        expr->next = $4;
+        $$ = expr;
+    }
     ;
 
 lambda_func
     : T_LAMBDA T_IDENT T_ARROW expr
-    { printf("lambda definition: %s\n", $2); }
+    {
+        char *name = lex_substr($2, @2.last_column - @2.first_column);
+        $$ = abs_lam_new(@4.first_line, @4.last_column, name, $4);
+    }
     ;
 
 %%

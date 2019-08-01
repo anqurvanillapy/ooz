@@ -96,7 +96,7 @@ vec_del(vec_t *self, size_t pos)
         return -1;
     }
 
-    if (self->cap / (self->size - 1) > 3) {
+    if (self->size != 1 && self->cap / (self->size - 1) > 3) {
         new_cap = self->cap / 2;
     }
     new_data = (void **)malloc(sizeof(void *) * new_cap);

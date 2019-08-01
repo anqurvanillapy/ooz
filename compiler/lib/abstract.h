@@ -13,7 +13,7 @@
 
 typedef struct {
     const char *arg;
-    struct expr *exp;
+    struct expr *body;
 } lam_t;
 
 typedef struct {
@@ -61,9 +61,11 @@ bool abs_ctx_lookup(const char *name);
 
 void abs_ctx_add(const char *name, expr_t *expr);
 
-expr_t *abs_lam_new(int col, int line);
+expr_t *abs_lam_new(int line, int col, const char *arg, expr_t *body);
 
 expr_t *abs_var_new(int col, int line, const char *name);
+
+void abs_def_check_boundfree(const char *this, expr_t *expr);
 
 #ifdef __cpluscplus
 }
