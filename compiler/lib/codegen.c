@@ -43,32 +43,32 @@ cg_init(const char *filename)
 #define MAIN_TMPL "int main(){return 0;}\n"
 
 static void
-_write_file_header(FILE *f)
+write_file_header(FILE *f)
 {
     fprintf(f, FILE_HEADER);
 }
 
 static void
-_write_entry(FILE *f)
+write_entry(FILE *f)
 {
     fprintf(f, ENTRY_HEADER, "v");
     fprintf(f, ENTRY_FOOTER);
 }
 
 static void
-_write_infotbl(FILE *f)
+write_infotbl(FILE *f)
 {
     fprintf(f, INFOTBL_TMPL, "v", "TypeInt", "v");
 }
 
 static void
-_write_closure(FILE *f)
+write_closure(FILE *f)
 {
     fprintf(f, CLOSURE_TMPL, "v", "ClosCtor", "v", "(void*)42");
 }
 
 static void
-_write_main(FILE *f)
+write_main(FILE *f)
 {
     fprintf(f, MAIN_TMPL);
 }
@@ -82,11 +82,11 @@ cg_writefile()
         return ErrOpenFile;
     }
 
-    _write_file_header(f);
-    _write_entry(f);
-    _write_infotbl(f);
-    _write_closure(f);
-    _write_main(f);
+    write_file_header(f);
+    write_entry(f);
+    write_infotbl(f);
+    write_closure(f);
+    write_main(f);
 
     fclose(f);
     free(cg.outfile);

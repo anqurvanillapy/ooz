@@ -56,7 +56,7 @@ abs_ctx_add(const char *name, expr_t *expr)
 }
 
 static expr_t *
-_abs_expr_new(int line, int col)
+abs_expr_new(int line, int col)
 {
     expr_t *expr = (expr_t *)malloc(sizeof(expr_t));
     if (!expr) {
@@ -69,7 +69,7 @@ _abs_expr_new(int line, int col)
 }
 
 static int
-_abs_env_lookup(vec_t *env, const char *name)
+abs_env_lookup(vec_t *env, const char *name)
 {
     int i;
     const char **data = (const char **)vec_data(env);
@@ -83,7 +83,7 @@ _abs_env_lookup(vec_t *env, const char *name)
 }
 
 static void
-_abs_lam_set_dbi(expr_t *lam)
+abs_lam_set_dbi(expr_t *lam)
 {
     vec_t *env = vec_new();
     vec_t *items = vec_new();
@@ -107,7 +107,7 @@ _abs_lam_set_dbi(expr_t *lam)
         }
 
         if (item->val.var.index == 0) {
-            int index = _abs_env_lookup(env, item->val.var.name);
+            int index = abs_env_lookup(env, item->val.var.name);
             item->val.var.index = index;
             printf("%d:%d: variable '%s' index: %d\n", item->loc.line,
                    item->loc.col, item->val.var.name, index);
@@ -129,12 +129,12 @@ abs_lam_new(int line, int col, const char *arg, expr_t *body)
         LOG_FATAL(ErrInternal);
     }
 
-    expr_t *expr = _abs_expr_new(line, col);
+    expr_t *expr = abs_expr_new(line, col);
     expr->tag = ExprLam;
     expr->val.lam.arg = arg;
     expr->val.lam.body = body;
 
-    _abs_lam_set_dbi(expr);
+    abs_lam_set_dbi(expr);
 
     return expr;
 }
@@ -142,7 +142,7 @@ abs_lam_new(int line, int col, const char *arg, expr_t *body)
 expr_t *
 abs_var_new(int line, int col, const char *name)
 {
-    expr_t *expr = _abs_expr_new(line, col);
+    expr_t *expr = abs_expr_new(line, col);
     expr->tag = ExprVar;
     expr->val.var.name = name;
     expr->val.var.def = NULL;
