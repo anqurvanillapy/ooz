@@ -72,7 +72,6 @@ def
     : T_IDENT T_ASSIGN expr T_SEMICOLON
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
-        abs_def_check_boundfree(name, $3);
         abs_ctx_add(name, $3);
         printf("\n");
     }
@@ -138,6 +137,8 @@ main(int argc, const char *argv[]) {
 
     yyparse();
     fclose(yyin);
+
+    abs_check_boundfree();
 
     cg_init(filename);
     cg_writefile();

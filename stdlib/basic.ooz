@@ -4,14 +4,14 @@ module Basic where
 id :: a -> a
 id = \x -> x
 
+not :: a -> a
+not = \x -> x false true
+
 true :: a -> a -> a
-true  = \x -> \y -> x
+true = \x -> \y -> x
 
 false :: a -> a -> a
 false = \x -> \y -> y
-
-not :: a -> a
-not = \x -> x false true
 
 K :: a -> a -> a
 K = \x -> \y -> x

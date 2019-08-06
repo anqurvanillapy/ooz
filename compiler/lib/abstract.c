@@ -25,6 +25,7 @@ abs_init(const char *filename)
     ast.filename = filename;
     abs_set_module(NULL);
     ast.ctx = map_new(64);
+    ast.defs = vec_new();
 }
 
 void
@@ -52,6 +53,10 @@ abs_ctx_add(const char *name, expr_t *expr)
     }
 
     if (map_set(ast.ctx, name, expr) != 0) {
+        LOG_FATAL(ErrInternal);
+    }
+
+    if (vec_add(ast.defs, expr) != 0) {
         LOG_FATAL(ErrInternal);
     }
 }
@@ -151,39 +156,53 @@ abs_var_new(int line, int col, const char *name)
     expr_t *expr = _abs_expr_new(line, col);
     expr->tag = ExprVar;
     expr->val.var.name = name;
+    expr->val.var.def = NULL;
     return expr;
 }
 
 void
-abs_def_check_boundfree(const char *this, expr_t *expr)
+abs_check_boundfree()
 {
-    vec_t *items = vec_new();
-    vec_add(items, expr);
+    size_t i;
+    vec_t *defs;
 
-    while (vec_size(items) != 0) {
-        size_t nitem = vec_size(items);
-        expr_t *item = vec_get(items, nitem - 1);
-        vec_del(items, nitem - 1);
+    for (i = 0, defs = ast.defs; i < vec_size(defs); ++i) {
+        expr_t *expr = vec_data(defs)[i];
+        vec_t *items = vec_new();
+        vec_add(items, expr);
 
-        if (item->next) {
-            vec_add(items, item->next);
+        while (vec_size(items) != 0) {
+            size_t nitem = vec_size(items);
+            expr_t *item = vec_get(items, nitem - 1);
+            vec_del(items, nitem - 1);
+
+            if (item->next) {
+                vec_add(items, item->next);
+            }
+
+            if (item->tag == ExprLam) {
+                vec_add(items, item->val.lam.body);
+                continue;
+            }
+
+            if (item->val.var.index > 0) {
+                continue;
+            }
+
+            const char *name = item->val.var.name;
+            expr_t *def = map_get(ast.ctx, name);
+
+            if (!def) {
+                ABS_ERROR(ERRFMT_Ctx_UnboundVariable, ast.filename,
+                          item->loc.line, item->loc.col, name);
+            }
+
+            item->val.var.def = def;
+            printf("%d:%d: boundfree variable '%s' def loc: %d:%d\n",
+                   item->loc.line, item->loc.col, item->val.var.name,
+                   item->val.var.def->loc.line, item->val.var.def->loc.col);
         }
 
-        if (item->tag == ExprLam) {
-            vec_add(items, item->val.lam.body);
-            continue;
-        }
-
-        if (item->val.var.index > 0) {
-            continue;
-        }
-
-        const char *name = item->val.var.name;
-        if (strcmp(this, name) != 0 && !map_get(ast.ctx, name)) {
-            ABS_ERROR(ERRFMT_Ctx_UnboundVariable, ast.filename, item->loc.line,
-                      item->loc.col, name);
-        }
+        vec_free(items);
     }
-
-    vec_free(items);
 }
