@@ -38,16 +38,10 @@ abs_set_module(const char *name)
     ast.module_name = name;
 }
 
-bool
-abs_ctx_has(const char *name)
-{
-    return !!map_get(ast.ctx, name);
-}
-
 void
 abs_ctx_add(const char *name, expr_t *expr)
 {
-    if (abs_ctx_has(name)) {
+    if (map_get(ast.ctx, name)) {
         ABS_ERROR(ERRFMT_Ctx_VariablelreadyExists, ast.filename, expr->loc.line,
                   expr->loc.col, name);
     }

@@ -55,8 +55,6 @@ void abs_init(const char *filename);
 
 void abs_set_module(const char *name);
 
-bool abs_ctx_lookup(const char *name);
-
 void abs_ctx_add(const char *name, expr_t *expr);
 
 expr_t *abs_lam_new(int line, int col, const char *arg, expr_t *body);
