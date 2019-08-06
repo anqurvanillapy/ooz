@@ -40,7 +40,7 @@ abs_set_module(const char *name)
 bool
 abs_ctx_has(const char *name)
 {
-    return map_get(ast.ctx, name) != NULL;
+    return !!map_get(ast.ctx, name);
 }
 
 void
@@ -72,12 +72,12 @@ _abs_expr_new(int line, int col)
 static int
 _abs_env_lookup(vec_t *env, const char *name)
 {
-    size_t i;
-    size_t size;
+    int i;
     const char **data = (const char **)vec_data(env);
-    for (i = 0, size = vec_size(env); i < size; ++i) {
+    int size = (int)vec_size(env);
+    for (i = size - 1; i >= 0; --i) {
         if (strcmp(name, data[i]) == 0) {
-            return (int)(size - i);
+            return size - i;
         }
     }
     return 0;
@@ -97,7 +97,7 @@ _abs_lam_set_dbi(expr_t *lam)
         expr_t *item = vec_get(items, nitem - 1);
         vec_del(items, nitem - 1);
 
-        if (item->next != NULL) {
+        if (item->next) {
             vec_add(items, item->next);
         }
 
@@ -107,9 +107,21 @@ _abs_lam_set_dbi(expr_t *lam)
             continue;
         }
 
+        if (item->val.var.index != 0) {
+            if (!item->next) {
+                vec_del(env, vec_size(env) - 1);
+            }
+            continue;
+        }
+
         int index = _abs_env_lookup(env, item->val.var.name);
         item->val.var.index = index;
-        printf("variable '%s' index: %d\n", item->val.var.name, index);
+        printf("%d:%d: variable '%s' index: %d\n", item->loc.line,
+               item->loc.col, item->val.var.name, index);
+
+        if (!item->next) {
+            vec_del(env, vec_size(env) - 1);
+        }
     }
 
     vec_free(env);
@@ -153,7 +165,7 @@ abs_def_check_boundfree(const char *this, expr_t *expr)
         expr_t *item = vec_get(items, nitem - 1);
         vec_del(items, nitem - 1);
 
-        if (item->next != NULL) {
+        if (item->next) {
             vec_add(items, item->next);
         }
 
@@ -167,9 +179,11 @@ abs_def_check_boundfree(const char *this, expr_t *expr)
         }
 
         const char *name = item->val.var.name;
-        if (strcmp(this, name) != 0 && map_get(ast.ctx, name) == NULL) {
+        if (strcmp(this, name) != 0 && !map_get(ast.ctx, name)) {
             ABS_ERROR(ERRFMT_Ctx_UnboundVariable, ast.filename, item->loc.line,
                       item->loc.col, name);
         }
     }
+
+    vec_free(items);
 }

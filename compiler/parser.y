@@ -74,6 +74,7 @@ def
         char *name = lex_substr($1, @1.last_column - @1.first_column);
         abs_def_check_boundfree(name, $3);
         abs_ctx_add(name, $3);
+        printf("\n");
     }
     ;
 

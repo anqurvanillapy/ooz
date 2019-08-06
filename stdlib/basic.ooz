@@ -18,3 +18,5 @@ K = \x -> \y -> x
 
 S :: a -> a -> a
 S = \x -> \y -> \z -> x z (y z)
+
+lol = \x -> (\y -> y) x
