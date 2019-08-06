@@ -1,6 +1,6 @@
 # OOZ
 
-OOZ is a function toy language, inspired by Haskell.
+OOZ is a functional toy language, inspired by Haskell.
 
 ## Roadmap
 

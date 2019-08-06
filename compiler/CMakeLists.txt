@@ -13,7 +13,6 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include
 )
 
-
 add_executable(oozc
   ${FLEX_lexer_OUTPUTS}
   ${BISON_parser_OUTPUTS}
