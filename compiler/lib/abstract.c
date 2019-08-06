@@ -106,17 +106,12 @@ _abs_lam_set_dbi(expr_t *lam)
             continue;
         }
 
-        if (item->val.var.index != 0) {
-            if (!item->next) {
-                vec_del(env, vec_size(env) - 1);
-            }
-            continue;
+        if (item->val.var.index == 0) {
+            int index = _abs_env_lookup(env, item->val.var.name);
+            item->val.var.index = index;
+            printf("%d:%d: variable '%s' index: %d\n", item->loc.line,
+                   item->loc.col, item->val.var.name, index);
         }
-
-        int index = _abs_env_lookup(env, item->val.var.name);
-        item->val.var.index = index;
-        printf("%d:%d: variable '%s' index: %d\n", item->loc.line,
-               item->loc.col, item->val.var.name, index);
 
         if (!item->next) {
             vec_del(env, vec_size(env) - 1);
