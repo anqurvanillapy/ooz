@@ -86,14 +86,14 @@ expr
     | T_IDENT
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
-        expr_t *var = abs_var_new(@1.first_line, @1.first_column, name);
+        expr_t *var = abs_var_new(@1.first_line, @1.first_column + 1, name);
         $$ = var;
     }
     | expr T_IDENT
     {
         char *name = lex_substr($2, @2.last_column - @2.first_column);
-        expr_t *var = abs_var_new(@2.first_line, @2.first_column, name);
-        $$ = abs_app_new(@1.first_line, @1.first_column, $1, var);
+        expr_t *var = abs_var_new(@2.first_line, @2.first_column + 1, name);
+        $$ = abs_app_new(@1.first_line, @1.first_column + 1, $1, var);
     }
     | T_LPAREN expr T_RPAREN
     {
@@ -101,7 +101,7 @@ expr
     }
     | expr T_LPAREN expr T_RPAREN
     {
-        $$ = abs_app_new(@1.first_line, @1.first_column, $1, $3);
+        $$ = abs_app_new(@1.first_line, @1.first_column + 1, $1, $3);
     }
     ;
 
@@ -109,7 +109,7 @@ lambda_func
     : T_LAMBDA T_IDENT T_ARROW expr
     {
         char *name = lex_substr($2, @2.last_column - @2.first_column);
-        $$ = abs_lam_new(@4.first_line, @4.first_column, name, $4);
+        $$ = abs_lam_new(@2.first_line, @2.first_column + 1, name, $4);
     }
     ;
 
