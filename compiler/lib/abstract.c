@@ -64,10 +64,10 @@ abs_expr_new(int line, int col)
     }
     expr->loc.line = line;
     expr->loc.col = col;
-    expr->next = NULL;
     return expr;
 }
 
+#if 0
 static int
 abs_env_lookup(vec_t *env, const char *name)
 {
@@ -121,12 +121,13 @@ abs_lam_set_dbi(expr_t *lam)
     vec_free(env);
     vec_free(items);
 }
+#endif
 
 expr_t *
 abs_lam_new(int line, int col, const char *arg, expr_t *body)
 {
     if (!arg || !body) {
-        LOG_FATAL(ErrInternal);
+        LOG_FATAL(ErrNullPointer);
     }
 
     expr_t *expr = abs_expr_new(line, col);
@@ -134,7 +135,7 @@ abs_lam_new(int line, int col, const char *arg, expr_t *body)
     expr->val.lam.arg = arg;
     expr->val.lam.body = body;
 
-    abs_lam_set_dbi(expr);
+    // abs_lam_set_dbi(expr);
 
     return expr;
 }
@@ -142,6 +143,10 @@ abs_lam_new(int line, int col, const char *arg, expr_t *body)
 expr_t *
 abs_var_new(int line, int col, const char *name)
 {
+    if (!name) {
+        LOG_FATAL(ErrNullPointer);
+    }
+
     expr_t *expr = abs_expr_new(line, col);
     expr->tag = ExprVar;
     expr->val.var.name = name;
@@ -149,6 +154,21 @@ abs_var_new(int line, int col, const char *name)
     return expr;
 }
 
+expr_t *
+abs_app_new(int line, int col, expr_t *lhs, expr_t *rhs)
+{
+    if (!lhs || !rhs) {
+        LOG_FATAL(ErrNullPointer);
+    }
+
+    expr_t *expr = abs_expr_new(line, col);
+    expr->tag = ExprApp;
+    expr->val.app.lhs = lhs;
+    expr->val.app.rhs = rhs;
+    return expr;
+}
+
+#if 0
 void
 abs_check_boundfree()
 {
@@ -194,4 +214,53 @@ abs_check_boundfree()
 
         vec_free(items);
     }
+}
+#endif
+
+void
+abs_walk_expr(expr_t *expr)
+{
+    vec_t *items = vec_new();
+    vec_add(items, expr);
+
+    expr->depth = 0;
+
+    while (vec_size(items) != 0) {
+        size_t nitem = vec_size(items);
+        expr_t *item = vec_get(items, nitem - 1);
+        vec_del(items, nitem - 1);
+
+        switch (item->tag) {
+        case ExprLam:
+            item->val.lam.body->depth = item->depth + 1;
+            vec_add(items, item->val.lam.body);
+            for (int i = 0; i < item->depth; ++i) {
+                printf("    ");
+            }
+            printf("%d:%d: lambda \\%s ->\n", item->loc.line, item->loc.col,
+                   item->val.lam.arg);
+            break;
+
+        case ExprVar:
+            for (int i = 0; i < item->depth; ++i) {
+                printf("    ");
+            }
+            printf("%d:%d: variable '%s'\n", item->loc.line, item->loc.col,
+                   item->val.var.name);
+            break;
+
+        case ExprApp:
+            for (int i = 0; i < item->depth; ++i) {
+                printf("    ");
+            }
+            item->val.app.rhs->depth = item->depth + 1;
+            item->val.app.lhs->depth = item->depth + 1;
+            vec_add(items, item->val.app.rhs);
+            vec_add(items, item->val.app.lhs);
+            printf("%d:%d: app\n", item->loc.line, item->loc.col);
+            break;
+        }
+    }
+
+    vec_free(items);
 }

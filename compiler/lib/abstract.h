@@ -22,9 +22,15 @@ typedef struct {
     struct expr *def;
 } var_t;
 
+typedef struct {
+    struct expr *lhs;
+    struct expr *rhs;
+} app_t;
+
 typedef enum expr_tag {
     ExprLam,
     ExprVar,
+    ExprApp,
 } expr_tag_t;
 
 typedef struct expr {
@@ -34,9 +40,11 @@ typedef struct expr {
     union {
         lam_t lam;
         var_t var;
+        app_t app;
     } val;
 
-    struct expr *next;
+    // FIXME
+    int depth;
 } expr_t;
 
 typedef struct {
@@ -61,7 +69,11 @@ expr_t *abs_lam_new(int line, int col, const char *arg, expr_t *body);
 
 expr_t *abs_var_new(int col, int line, const char *name);
 
+expr_t *abs_app_new(int line, int col, expr_t *lhs, expr_t *rhs);
+
 void abs_check_boundfree();
+
+void abs_walk_expr(expr_t *expr);
 
 #ifdef __cpluscplus
 }

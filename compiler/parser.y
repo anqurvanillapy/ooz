@@ -73,6 +73,7 @@ def
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
         abs_ctx_add(name, $3);
+        abs_walk_expr($3);
         printf("\n");
     }
     ;
@@ -85,25 +86,22 @@ expr
     | T_IDENT
     {
         char *name = lex_substr($1, @1.last_column - @1.first_column);
-        expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
+        expr_t *var = abs_var_new(@1.first_line, @1.first_column, name);
         $$ = var;
     }
-    | T_IDENT expr
+    | expr T_IDENT
     {
-        char *name = lex_substr($1, @1.last_column - @1.first_column);
-        expr_t *var = abs_var_new(@1.first_line, @1.last_column, name);
-        var->next = $2;
-        $$ = var;
+        char *name = lex_substr($2, @2.last_column - @2.first_column);
+        expr_t *var = abs_var_new(@2.first_line, @2.first_column, name);
+        $$ = abs_app_new(@1.first_line, @1.first_column, $1, var);
     }
     | T_LPAREN expr T_RPAREN
     {
         $$ = $2;
     }
-    | T_LPAREN expr T_RPAREN expr
+    | expr T_LPAREN expr T_RPAREN
     {
-        expr_t* expr = $2;
-        expr->next = $4;
-        $$ = expr;
+        $$ = abs_app_new(@1.first_line, @1.first_column, $1, $3);
     }
     ;
 
@@ -111,7 +109,7 @@ lambda_func
     : T_LAMBDA T_IDENT T_ARROW expr
     {
         char *name = lex_substr($2, @2.last_column - @2.first_column);
-        $$ = abs_lam_new(@4.first_line, @4.last_column, name, $4);
+        $$ = abs_lam_new(@4.first_line, @4.first_column, name, $4);
     }
     ;
 
@@ -138,7 +136,7 @@ main(int argc, const char *argv[]) {
     yyparse();
     fclose(yyin);
 
-    abs_check_boundfree();
+    // abs_check_boundfree();
 
     cg_init(filename);
     cg_writefile();
@@ -149,6 +147,6 @@ main(int argc, const char *argv[]) {
 void
 yyerror(const char *s) {
     fprintf(stderr, "%s:%d:%d: Parse error: %s\n",
-            filename, yylloc.first_line, yylloc.last_column, s);
+            filename, yylloc.first_line, yylloc.first_column, s);
     exit(1);
 }
